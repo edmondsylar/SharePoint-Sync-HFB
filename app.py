@@ -71,6 +71,16 @@ def getSyncedData():
     synced_data = os.listdir(child_folder)
     return jsonify({'synced_data': synced_data})
 
+
+
+# new endpoint to return the db-view page from the templates folder
+# function returns the db-view page with the data from the database named `data`
+@app.route('/api/v1.0/DbView')
+def dbView():
+    db = Database()
+    data = db.getData()
+    return render_template('db-view.html', data=data)
+
 # run the api.
 if __name__ == '__main__':
     app.run(debug=True, port=5100)
