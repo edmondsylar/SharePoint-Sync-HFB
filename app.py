@@ -18,6 +18,9 @@ from flask_cors import CORS, cross_origin
 from dirsync import sync
 import json
 from rich.console import Console
+import os
+
+private_key = os.environ.get('OPENAI_API_KEY')
 
 # file modifier functino imports.
 import random
@@ -108,7 +111,7 @@ def BatchMigration():
         return render_template('batch-migration.html')
     
     def fn_post():
-        ai_modifier = ai_cotex("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")
+        ai_modifier = ai_cotex(private_key)
         modified_data = ai_modifier.compare_locations(request.form)
         
         # create random file name
