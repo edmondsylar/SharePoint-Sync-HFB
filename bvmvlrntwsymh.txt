@@ -1,0 +1,7 @@
+
+
+http://localenv.com/arua, http://remote_env/arua
+http://localenv.com/entebbe, http://remote_env/entebbe
+http://localenv.com/Kajjansi, http://remote_env/Kajjansi
+http://localenv.com/Kiggo, http://remote_env/Kiggo
+http://localenv.com/Katabi, http://remote_env/Katabi

@@ -16,6 +16,17 @@ from flask import Flask, request, jsonify, render_template
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from dirsync import sync
+import json
+from rich.console import Console
+
+# file modifier functino imports.
+import random
+import string
+
+printer = Console()
+
+# import the ai_cotext class from the controllers/ai_cotext.py
+from controllers.ai_cotext import ai_cotex
 
 # import the database class from controllers/database.py
 from controllers.database import Database
@@ -70,6 +81,70 @@ def getSyncedData():
     # command to get the synced data from the child folder.
     synced_data = os.listdir(child_folder)
     return jsonify({'synced_data': synced_data})
+
+
+# Batch Migration.
+@app.route('/api/v1.0/BatchMigration', methods=['POST', 'GET'])
+def BatchMigration():
+    
+    def process_file(file_name):
+        variables = []
+        with open(file_name, 'r') as f:
+            for line in f:
+                if len(line) < 4:
+                    continue
+                data = line.strip().split(',')
+                variables.append([data[0],data[1]])
+        return variables
+
+    
+    def pick_info(line): 
+        line_split = line.split(',')
+        parent_site = line_split[0]
+        sharepoint_site = line_split[1]
+        return parent_site, sharepoint_site
+    
+    def fn_get():
+        return render_template('batch-migration.html')
+    
+    def fn_post():
+        ai_modifier = ai_cotex("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")
+        modified_data = ai_modifier.compare_locations(request.form)
+        
+        # create random file name
+        file_name = random_file_name()
+        
+        # write the modified data into a file and save it as the random file name
+        with open(f'{file_name}.txt', 'w') as f:
+            for line in modified_data:
+                # write line if it is not empty
+                if line != '':
+                    f.write(line)
+                else:
+                    continue
+                    
+                
+        # after writing the data we are going to call the process_file function to process the data
+        variables = process_file(f'{file_name}.txt')
+        printer.print(variables) 
+        
+        print(modified_data)
+        
+        return render_template('batch-migration.html', data=modified_data)
+        # function genretaes random file name 13 characters long
+    def random_file_name():
+        letters = string.ascii_lowercase
+        result_str = ''.join(random.choice(letters) for i in range(13))
+        return result_str
+
+        
+        # write the modified data into a file called `modified_data.txt`
+        
+        
+        # return migreation file created msg to the user.
+        return render_template('batch-migration.html', data="Migration file created successfully")
+   
+    return {'GET': fn_get, 'POST': fn_post}.get(request.method, lambda: 'Invalid request method')()
 
 
 
