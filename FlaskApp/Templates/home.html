@@ -27,35 +27,37 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
+        <div class="container">
             <h1>Migration History.</h1>
-            {% for result in results %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h5 class="card-title">Parent Site</h5>
-                                <p class="card-text">{{ result.parent_site }}</p>
-                            </div>
-                            <div class="col-sm-6">
-                                <h5 class="card-title">Child Site</h5>
-                                <p class="card-text">{{ result.child_site }}</p>
+            <div class="row">     
+                {% for result in results %}
+                    <div class="col-sm-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h5 class="card-title">Parent Site</h5>
+                                        <p class="card-text">{{ result.parent_site }}</p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <h5 class="card-title">Child Site</h5>
+                                        <p class="card-text">{{ result.child_site }}</p>
 
+                                    </div>
+                                </div>
+
+                                <p><b> Date Synced </b>: {{ result.timestamp }}</p>
+                                    <form action="/" method="post">
+                                        <input type="hidden" value="{{ result.parent_site }}" class="form-control" id="parent_site" name="parent_site">
+                                        <input type="hidden" class="form-control" value="{{ result.child_site }}" id="child_site" name="child_site">
+                                        <button type="submit" class="btn btn-primary">re synch</button>
+                                    </form>
+                                <!-- this is a form that call the  -->
                             </div>
                         </div>
-
-                        <p>Date Synced: {{ result.timestamp }}</p>
-                            <form action="/" method="post">
-                                <input type="hidden" value="{{ result.parent_site }}" class="form-control" id="parent_site" name="parent_site">
-                                <input type="hidden" class="form-control" value="{{ result.child_site }}" id="child_site" name="child_site">
-                                <button type="submit" class="btn btn-primary">re synch</button>
-                            </form>
-                        <!-- this is a form that call the  -->
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
