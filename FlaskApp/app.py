@@ -31,8 +31,7 @@ def home():
         # get the form data
         parent_site = request.form["parent_site"]
         # add the client intranet name to the parent site
-        parent_site = client_intranet_name + "/" + parent_site
-
+        
         child_site = request.form["child_site"]
 
         insert = db.insert_record(parent_site, child_site)
@@ -40,8 +39,6 @@ def home():
     else:
         # get all the records in the database.
         all_records = db.get_all_records()
-        print(all_records)
-
         # render the home page and pass the records to the home page
         return render_template("home.html", results=all_records)
 

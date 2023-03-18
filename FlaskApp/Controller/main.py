@@ -10,6 +10,10 @@ import datetime
 # import sleep to show output for some time period
 from time import sleep
 
+# import the dirsync
+import dirsync
+import os
+
 # create a class to manage all database operations
 # the class will have the following methods:
 # 1. insert a new record
@@ -133,12 +137,8 @@ class tiny_connect:
                 "timestamp": date
             }
             self.table.insert(record)
-            # if(self.table.insert(record)){
-            #     # call the async function to check if the record exists
-            #     await self.check_record(parent_site, child_site)
-            # }
-            return "Completed"
-            
+            # after the insert is successful, call the sync_directories function
+            return sync_directories(parent_site, child_site)            
             
         except Error as e:
             print({
@@ -177,5 +177,25 @@ class tiny_connect:
                 "Error": e
             })
 
-# 803266860
+# function to sync the folders
+def sync_directories(parent_dir, child_dir):
+    sleep(2)
+    try:
+        # check if parent_dir and child_dir exist
+        if not os.path.exists(parent_dir):
+            print(f"{parent_dir} does not exist")
+            return "Failed"
+        if not os.path.exists(child_dir):
+            print(f"{child_dir} does not exist")
+            return "Failed"
+
+        # synchronize directories
+        dirsync.sync(parent_dir, child_dir, 'sync', purge=False)
+
+        print(f"{parent_dir} synchronized to {child_dir}")
+    except Exception as e:
+        print(f"Failed to synchronize directories: {e}")
+        return "Completed"
+
+# 341711376
 # New+1234
