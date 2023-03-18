@@ -6,6 +6,9 @@
 # import the necessary packages
 import sqlite3
 from sqlite3 import Error
+import datetime
+# import sleep to show output for some time period
+from time import sleep
 
 # create a class to manage all database operations
 # the class will have the following methods:
@@ -21,7 +24,18 @@ class Database:
         self.database_name = client_name + ".db"
         self.table_name = "Sharepoint_migrations"
         self.conn = self.create_connection()
+        self.check_connection()
+        # now create a table if it doesn't exist
         self.create_table()
+
+    # check connection to the database
+    def check_connection(self):
+        if self.conn is not None:
+            print("Connection to the database was successful")
+            sleep(0.5)
+        else:
+            print("Connection to the database was not successful")
+            sleep(0.5)
 
     # create a connection to the database
     def create_connection(self):
@@ -48,32 +62,120 @@ class Database:
             print(e)
 
     # insert a new record into the database
-    def insert_record(self, parent_site, child_site, status, timestamp):
+    def insert_record(self, parent_site, child_site):
+        # create timestamp variable (date is today's date)
+        date = datetime.datetime.now()
+        status = "New"
         try:
+            # sql query to insert 
+            # parent_site, child_site, status, timestamp as the values
             sql = f"""INSERT INTO {self.table_name} (parent_site, child_site, status, timestamp)
                 VALUES (?, ?, ?, ?)"""
             c = self.conn.cursor()
-            c.execute(sql, (parent_site, child_site, status, timestamp))
+            # execute the query
+            c.execute(sql, (parent_site, child_site, status, date))
+            # commit the changes
             self.conn.commit()
+
+            print("Record inserted successfully")
+            return "Completed"
+
+        except Error as e:
+            print({
+                "Message":"Failed to insert query",
+                "Error": e
+            })
+
+from tinydb import TinyDB, Query
+import datetime
+from time import sleep
+
+class tiny_connect:
+    def __init__(self, client_name):
+        self.client_name = client_name
+        self.database_name = client_name + ".json"
+        self.table_name = "Sharepoint_migrations"
+        self.db = self.create_database()
+        self.check_database()
+        self.table = self.create_table()
+
+    def check_database(self):
+        if self.db:
+            print("Database exists")
+            sleep(0.5)
+        else:
+            print("Database does not exist")
+            sleep(0.5)
+
+    def create_database(self):
+        try:
+            db = TinyDB(self.database_name)
+            return db
+        except Error as e:
+            print(e)
+        return None
+
+    def create_table(self):
+        try:
+            table = self.db.table(self.table_name)
+            return table
         except Error as e:
             print(e)
 
-    # check all records in the database
-    def check_all_records(self):
+    def insert_record(self, parent_site, child_site):
+        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        status = "New"
         try:
-            sql = f"""SELECT * FROM {self.table_name}"""
-            c = self.conn.cursor()
-            c.execute(sql)
-            return c.fetchall()
+            record = {
+                "parent_site": parent_site,
+                "child_site": child_site,
+                "status": status,
+                "timestamp": date
+            }
+            self.table.insert(record)
+            # if(self.table.insert(record)){
+            #     # call the async function to check if the record exists
+            #     await self.check_record(parent_site, child_site)
+            # }
+            return "Completed"
+            
+            
         except Error as e:
-            print(e)
+            print({
+                "Message":"Failed to insert query",
+                "Error": e
+            })
 
-    # check a specific record in the database
-    def check_record(self, record_id):
+    # get all the records from the database
+    def get_all_records(self):
         try:
-            sql = f"""SELECT * FROM {self.table_name} WHERE id=?"""
-            c = self.conn.cursor()
-            c.execute(sql, (record_id,))
-            return c.fetchall()
+            records = self.table.all()
+            return records
         except Error as e:
-            print(e)
+            print({
+                "Message":"Failed to get records",
+                "Error": e
+            })
+
+    # ansync function to check if the record exists
+    async def check_record(self, parent_site, child_site):
+        try:
+            record = Query()
+            records = self.table.search((record.parent_site == parent_site) & (record.child_site == child_site))
+            if records:
+                # update the status of this recod to "Completed"
+                self.table.update({"status":"Completed"}, (record.parent_site == parent_site) & (record.child_site == child_site))
+                print({
+                    "Message":"Record updated successfully",
+                    "Record": records
+                })
+            else:
+                return False
+        except Error as e:
+            print({
+                "Message":"Failed to get records",
+                "Error": e
+            })
+
+# 803266860
+# New+1234

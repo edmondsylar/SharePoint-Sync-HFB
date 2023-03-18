@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Search Results</h1>
+    {% for result in search_results %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ result.parent_site }}</h5>
+                <p class="card-text">{{ result.child_site }}</p>
+                <p>Date Synced: {{ result.date_synced }}</p>
+                <a href="#" class="btn btn-primary">Re-sync</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
